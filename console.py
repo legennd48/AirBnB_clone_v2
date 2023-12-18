@@ -11,7 +11,6 @@ from models.city import City
 from models.amenity import Amenity
 from models.review import Review
 import shlex
-from datetime import datetime
 
 
 class HBNBCommand(cmd.Cmd):
@@ -116,66 +115,31 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, args):
-        """Create an object of any class"""
+        '''
+        Create a new instance of class BaseModel and save it to the JSON file.
+        '''
+        if len(args) == 0:
+            print("** class name missing **")
+            return
         try:
-            # Check if args is empty
-            if not args:
-                print("** class name missing **")
-                return
-
-            # Split the args into a list of tokens using shlex
-            args_list = shlex.split(args)
-
-            # Extract the class name from the first token
-            class_name = args_list[0]
-
-            try:
-                # Dynamically create an instance of the specified class
-                class_object = eval(class_name)()
-            except NameError:
-                print("** class doesn't exist **")
-                return
-
-            # Process the remaining tokens as attribute assignments
-            kw = {}
-            for arg in args_list[1:]:
+            args = shlex.split(args)
+            new_instance = eval(args[0])()
+            for i in args[1:]:
                 try:
-                    # Split each argument into key and value
-                    key, value = arg.split("=")
-
-                    # Replace underscores with spaces in the key
-                    key = key.replace("_", " ")
-
-                    # Try to evaluate the value
-                    try:
-                        value = eval(value)
-                    except (ValueError):
-                        pass
-
-                    # Set the attribute in the kwargs dictionary
-                    kw[key] = value
-
-                except (ValueError, IndexError):
-                    pass
-
-                # Set default values for 'created_at' and 'updated_at'
-                if 'created_at' not in kw:
-                    kw['created_at'] = datetime.now()
-                    if 'updated_at' not in kw:
-                        kw['updated_at'] = datetime.now()
-
-                        # Set the attributes on the instance
-                        for key, value in kw.items():
-                            setattr(class_object, key, value)
-
-                            # Save the instance
-                            class_object.save()
-
-                            # Print the id of the created instance
-                            print(class_object.id)
-
+                    key, value = i.split("=")
+                    if hasattr(new_instance, key):
+                        value = value.replace("_", " ")
+                        try:
+                            value = eval(value)
+                        except Exception as e:
+                            return
+                        setattr(new_instance, key, value)
+                except (ValueError, IndexError) as e:
+                    return
         except Exception as e:
-            print(f"An error occurred: {e}")
+            return
+        new_instance.save()
+        print(new_instance.id)
 
     def help_create(self):
         """ Help information for the create method """

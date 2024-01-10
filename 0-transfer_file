@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# copies a file from client to server using scp,
+#necessary parameters are recieved as arguments
+
+if [ "$#" -lt 3 ]; then
+   echo "Usage: 0-transfer_file PATH_TO_FILE IP USERNAME PATH_TO_SSH_KEY"
+   exit
+fi
+file=$1
+serverIp=$2
+userName=$3
+if [ "$#" -eq 4 ]; then
+    sshKey=$4
+    scp -i "$sshKey" -o StrictHostKeyChecking=no "$file" "$userName@$serverIp:~/"
+else
+   scp -o StrictHostKeyChecking=no "$file" "$userName@$serverIp:~/"
+fi

@@ -1,20 +1,30 @@
 #!/usr/bin/python3
 '''
-distributes an archive to web servers, using the function do_deploy:
-Prototype: def do_deploy(archive_path):
-Returns False if the file at the path archive_path doesn’t exist
-Upload the archive to the /tmp/ directory of the web server
-Uncompress the archive to the folder /data/web_static/releases/
-<archive filename without extension> on the web server
-Delete the archive from the web server
-Delete the symbolic link /data/web_static/current from the web server
-Create a new the symbolic link /data/web_static/current on the web server,
-linked to the new version of your code (/data/web_static/releases/<archive
-filename without extension>)
+Prototype: def deploy():
+The script should take the following steps:
+Call the do_pack() function and store the path of the created archive
+Return False if no archive has been created
+Call the do_deploy(archive_path) function, using the new path of the new archive
+Return the return value of do_deploy
 '''
-from fabric.api import run, put, env
+from fabric.api import run, put, env, local
 import os
-env.hosts = ['100.26.239.81', '54.165.171.31']
+from datetime import datetime
+env.hosts = ["100.26.239.81", "54.165.171.31"]
+env.user = "ubuntu"
+
+
+def do_pack():
+    """create .tgz archive of web_static/ folder"""
+    try:
+        arch_name = "web_static_{}.tgz".format(
+            datetime.now().strftime('%Y%m%d%H%M%S'))
+        local("mkdir -p versions/")
+        local("tar -cvzf versions/{} -C {} .".format(
+            arch_name, "web_static/"))
+        return "versions/{}".format(arch_name)
+    except Exception as e:
+        return None
 
 
 def do_deploy(archive_path):
@@ -49,3 +59,11 @@ def do_deploy(archive_path):
             return False
     else:
         return False
+
+def deploy():
+    ''' controls the deployment'''
+    archive = do_pack()
+    if archive is None:
+        return False
+    deployment = do_deploy(archive)
+    return deployment

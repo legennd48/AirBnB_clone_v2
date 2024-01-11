@@ -34,16 +34,16 @@ def do_deploy(archive_path):
             run("mkdir -p {}".format(destination))
 
             # Extract the archive to the destination directory
-            run("tar -xvzf /tmp/{}.tgz -C {}".format(fileName, destination))
+            run("tar -xzf /tmp/{}.tgz -C {}".format(fileName, destination))
 
             # Remove the archive from /tmp/
-            run("rm /tmp/{}.tgz".format(fileName))
+            run("rm -rf /tmp/{}.tgz".format(fileName))
 
             # Remove the symbolic link /data/web_static/current
-            run("rm -f /data/web_static/current")
+            run("rm -rf /data/web_static/current")
 
             # Create a new symbolic link /data/web_static/current
-            run("ln -s {} /data/web_static/current".format(destination))
+            run("ln -s {}/ /data/web_static/current".format(destination))
 
             return True
         except Exception as e:

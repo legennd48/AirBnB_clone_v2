@@ -4,7 +4,8 @@ Prototype: def deploy():
 The script should take the following steps:
 Call the do_pack() function and store the path of the created archive
 Return False if no archive has been created
-Call the do_deploy(archive_path) function, using the new path of the new archive
+Call the do_deploy(archive_path) function,
+using the new path of the new archive
 Return the return value of do_deploy
 '''
 from fabric.api import run, put, env, local
@@ -59,6 +60,7 @@ def do_deploy(archive_path):
             return False
     else:
         return False
+
 
 def deploy():
     ''' controls the deployment'''

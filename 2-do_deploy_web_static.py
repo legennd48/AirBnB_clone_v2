@@ -19,35 +19,36 @@ env.user = 'ubuntu'
 
 
 def do_deploy(archive_path):
-    """Deploys archive to webservers"""
-    if os.path.exists(archive_path):
-        try:
-
-            # Extract the filename without extension
-            fileName = os.path.splitext(os.path.basename(archive_path))[0]
-
-            # Upload the archive to /tmp/ directory on the web server
-            put(archive_path, "/tmp/{}.tgz".format(fileName))
-
-            # Create destination directory
-            destination = "/data/web_static/releases/{}".format(fileName)
-            run("mkdir -p {}".format(destination))
-
-            # Extract the archive to the destination directory
-            run("tar -xzf /tmp/{}.tgz -C {}".format(fileName, destination))
-
-            # Remove the archive from /tmp/
-            run("rm -rf /tmp/{}.tgz".format(fileName))
-
-            # Remove the symbolic link /data/web_static/current
-            run("rm -rf /data/web_static/current")
-
-            # Create a new symbolic link /data/web_static/current
-            run("ln -s {}/ /data/web_static/current".format(destination))
-
-            return True
-        except Exception as e:
-            print("Error: {}".format(e))
-            return False
-    else:
+    """
+    Distributes an archive to a web server
+    """
+    if os.path.isfile(archive_path) is False:
         return False
+    file = archive_path.split("/")[-1]
+    name = file.split(".")[0]
+
+    if put(archive_path, "/tmp/{}".format(file)).failed is True:
+        return False
+    if run("rm -rf /data/web_static/releases/{}/".
+           format(name)).failed is True:
+        return False
+    if run("mkdir -p /data/web_static/releases/{}/".
+           format(name)).failed is True:
+        return False
+    if run("tar -xzf /tmp/{} -C /data/web_static/releases/{}/".
+           format(file, name)).failed is True:
+        return False
+    if run("rm /tmp/{}".format(file)).failed is True:
+        return False
+    if run("mv /data/web_static/releases/{}/web_static/* "
+           "/data/web_static/releases/{}/".format(name, name)).failed is True:
+        return False
+    if run("rm -rf /data/web_static/releases/{}/web_static".
+           format(name)).failed is True:
+        return False
+    if run("rm -rf /data/web_static/current").failed is True:
+        return False
+    if run("ln -s /data/web_static/releases/{}/ /data/web_static/current".
+           format(name)).failed is True:
+        return False
+    return True

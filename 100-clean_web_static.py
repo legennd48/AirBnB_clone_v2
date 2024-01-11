@@ -64,6 +64,7 @@ def do_deploy(archive_path):
 
 
 def do_clean(number=0):
+    ''' performs cleanup'''
     num = 1 if int(number) == 0 else int(number)
 
     local_files = sorted(os.listdir("versions"))

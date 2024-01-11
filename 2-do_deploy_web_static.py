@@ -19,35 +19,24 @@ env.user = 'ubuntu'
 
 
 def do_deploy(archive_path):
-    """Deploys archive to webservers"""
-    if os.path.exists(archive_path):
-        try:
-
-            # Extract the filename without extension
-            fileName = os.path.splitext(os.path.basename(archive_path))[0]
-
-            # Upload the archive to /tmp/ directory on the web server
-            put(archive_path, "/tmp/{}.tgz".format(fileName))
-
-            # Create destination directory
-            destination = "/data/web_static/releases/{}".format(fileName)
-            run("mkdir -p {}".format(destination))
-
-            # Extract the archive to the destination directory
-            run("tar -xzf /tmp/{}.tgz -C {}".format(fileName, destination))
-
-            # Remove the archive from /tmp/
-            run("rm -rf /tmp/{}.tgz".format(fileName))
-
-            # Remove the symbolic link /data/web_static/current
-            run("rm -rf /data/web_static/current")
-
-            # Create a new symbolic link /data/web_static/current
-            run("ln -s {}/ /data/web_static/current".format(destination))
-
-            return True
-        except Exception as e:
-            print("Error: {}".format(e))
-            return False
-    else:
+    """
+    Deploy archive to web server
+    """
+    if os.path.isfile(archive_path) is False:
+        return False
+    try:
+        filename = archive_path.split("/")[-1]
+        no_ext = filename.split(".")[0]
+        path_no_ext = "/data/web_static/releases/{}/".format(no_ext)
+        symlink = "/data/web_static/current"
+        put(archive_path, "/tmp/")
+        run("mkdir -p {}".format(path_no_ext))
+        run("tar -xzf /tmp/{} -C {}".format(filename, path_no_ext))
+        run("rm /tmp/{}".format(filename))
+        run("mv {}web_static/* {}".format(path_no_ext, path_no_ext))
+        run("rm -rf {}web_static".format(path_no_ext))
+        run("rm -rf {}".format(symlink))
+        run("ln -s {} {}".format(path_no_ext, symlink))
+        return True
+    except:
         return False

@@ -15,7 +15,6 @@ filename without extension>)
 from fabric.api import run, put, env
 import os
 env.hosts = ['100.26.239.81', '54.165.171.31']
-env.user = 'ubuntu'
 
 
 def do_deploy(archive_path):

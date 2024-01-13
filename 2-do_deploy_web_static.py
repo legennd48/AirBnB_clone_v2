@@ -14,7 +14,8 @@ filename without extension>)
 '''
 from fabric.api import run, put, env
 import os
-env.hosts = ['100.26.239.81', '54.165.171.31']
+env.hosts = ['100.26.239.81', '100.25.163.174']
+env.user = "ubuntu"
 
 
 def do_deploy(archive_path):
@@ -23,26 +24,30 @@ def do_deploy(archive_path):
         try:
 
             # Extract the filename without extension
-            fileName = os.path.splitext(os.path.basename(archive_path))[0]
+            fileName = archive_path.split("/")[-1]
 
             # Upload the archive to /tmp/ directory on the web server
-            put(archive_path, "/tmp/{}.tgz".format(fileName))
+            put(archive_path, "/tmp/")
 
             # Create destination directory
-            destination = "/data/web_static/releases/{}".format(fileName)
-            run("mkdir -p {}".format(destination))
+            dest = ("/data/web_static/releases/" + fileName.split(".")[0])
+            run("sudo mkdir -p {}".format(dest))
 
             # Extract the archive to the destination directory
-            run("tar -xzf /tmp/{}.tgz -C {}".format(fileName, destination))
+            run("sudo tar -xzf /tmp/{} -C {}".format(fileName, dest))
 
             # Remove the archive from /tmp/
-            run("rm -rf /tmp/{}.tgz".format(fileName))
+            run("sudo rm /tmp/{}".format(fileName))
+
+            # move files to parent directory and remove now empty subdir...
+            run("sudo mv {}/web_static/* {}/".format(dest, dest))
+            run("sudo rm -rf {}/web_static".format(dest))
 
             # Remove the symbolic link /data/web_static/current
-            run("rm -rf /data/web_static/current")
+            run("sudo rm -rf /data/web_static/current")
 
             # Create a new symbolic link /data/web_static/current
-            run("ln -s {}/ /data/web_static/current".format(destination))
+            run("sudo ln -s {} /data/web_static/current".format(dest))
 
             return True
         except Exception as e:

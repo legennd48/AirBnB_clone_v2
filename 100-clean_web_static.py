@@ -11,6 +11,11 @@ hosts = ["100.26.239.81", "100.25.163.174"]
 
 
 def do_clean(number=0):
+    '''
+    deletes locally and remotely
+    Args:
+    number: the number of files to remain undeleted
+    '''
     number = 1 if int(number) == 0 else int(number)
 
     files = sorted(os.listdir("versions"))

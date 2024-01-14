@@ -12,8 +12,9 @@ Create a new the symbolic link /data/web_static/current on the web server,
 linked to the new version of your code (/data/web_static/releases/<archive
 filename without extension>)
 '''
-from fabric.api import run, put, env
+from fabric.api import run, put, env, local
 import os
+
 env.hosts = ['100.26.239.81', '100.25.163.174']
 env.user = "ubuntu"
 

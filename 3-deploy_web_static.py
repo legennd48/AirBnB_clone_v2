@@ -11,7 +11,7 @@ Return the return value of do_deploy
 from fabric.api import run, put, env, local
 import os
 from datetime import datetime
-env.hosts = ["100.26.239.81", "100.25.163.174"]
+hosts = ["100.26.239.81", "100.25.163.174"]
 env.user = "ubuntu"
 
 
@@ -71,7 +71,11 @@ def deploy():
     try:
         archive = do_pack()
         if archive:
-            deployment = do_deploy(archive)
+            for host in hosts:
+                env.host_string = host  # Set the current host
+                deployment = do_deploy(archive)
+                if not deployment:
+                    return False
             return deployment
         else:
             return False

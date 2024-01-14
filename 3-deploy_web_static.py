@@ -76,7 +76,7 @@ def deploy():
                 deployment = do_deploy(archive)
                 if not deployment:
                     return False
-            return deployment
+            return True
         else:
             return False
     except Exception as e:

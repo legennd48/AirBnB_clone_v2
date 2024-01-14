@@ -32,13 +32,25 @@ package { 'nginx':
 }
 
 # Create folders
-file { '/data/web_static/releases/test/':
-  ensure => directory,
-}
+file { '/data':
+  ensure  => 'directory'
+} ->
 
-file { '/data/web_static/shared/':
-  ensure => directory,
-}
+file { '/data/web_static':
+  ensure => 'directory'
+} ->
+
+file { '/data/web_static/releases':
+  ensure => 'directory'
+} ->
+
+file { '/data/web_static/releases/test':
+  ensure => 'directory'
+} ->
+
+file { '/data/web_static/shared':
+  ensure => 'directory'
+} ->
 
 # Create fake index.html
 file { '/data/web_static/releases/test/index.html':

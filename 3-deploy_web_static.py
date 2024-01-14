@@ -76,6 +76,7 @@ def deploy():
                 deployment = do_deploy(archive)
                 if not deployment:
                     return False
+                print("New version deployed!")
             return True
         else:
             return False

@@ -83,4 +83,4 @@ class DBStorage:
         '''
         closses session()
         '''
-        self.session.close()
+        self.__session.close()

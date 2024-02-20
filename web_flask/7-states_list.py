@@ -5,6 +5,7 @@ starts a web server listening on port 5000 at 0.0.0.0
 
 from flask import Flask, render_template
 from models import storage
+from models.state import State
 
 app = Flask(__name__)
 
@@ -14,7 +15,7 @@ def states_list():
     '''
     displaysh html page using render_template
     '''
-    states = storage.all("State")
+    states = storage.all(State)
     return render_template("7-states_list.html", states=states)
 
 
@@ -27,4 +28,4 @@ def teardown(exc):
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0.')
+    app.run(host='0.0.0.0', port=5000)

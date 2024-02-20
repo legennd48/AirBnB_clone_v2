@@ -23,5 +23,5 @@ class State(BaseModel, Base):
             if City.state_id == current State.id
             """
             from models import storage
-            return [city for city in models.storage.all(City).values()
+            return [city for city in storage.all(City).values()
                     if city.state_id == self.id]
